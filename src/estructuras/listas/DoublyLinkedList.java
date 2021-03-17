@@ -1,11 +1,15 @@
 
 package estructuras.listas;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * @author alejandro
+ * @param <E>
  */
 
-public class DoublyLinkedList<E>{
+public class DoublyLinkedList<E> implements Iterable{
     public static class Node<E>{
         private E element;
         private Node <E> prev;
@@ -79,6 +83,10 @@ public class DoublyLinkedList<E>{
     public void addLast(E e){
         addBetween(e, trailer.getPrev(), trailer);
     }
+    
+    public void add(E e){
+        addLast(e);
+    }
 
     public E removeFirst(){
         if(isEmpty())
@@ -89,7 +97,7 @@ public class DoublyLinkedList<E>{
     public E removeLast(){
         if(isEmpty())
             return null;
-        return remove(trailer.getNext());
+        return remove(trailer.getPrev());
     }
     
     private void addBetween(E e, Node<E> predecessor, Node<E> successor){
@@ -101,7 +109,7 @@ public class DoublyLinkedList<E>{
 
     public E remove(Node<E> node){
         Node<E> predecessor = node.getPrev();
-        Node<E> successor = node.getPrev();
+        Node<E> successor = node.getNext();
         predecessor.setNext(successor);
         successor.setPrev(predecessor);
         size -- ;
@@ -132,6 +140,52 @@ public class DoublyLinkedList<E>{
         return current;
     }
     
+
+    
+    private class LinkedListIterator implements Iterator<E> {
+        private Node<E> iterator = header.getNext();                   
+
+        @Override
+        public boolean hasNext() { 
+            return iterator.getNext()!=null; 
+        }   
+
+        @Override
+        public E next() throws NoSuchElementException {
+          if (iterator.getNext()==null)
+              throw new NoSuchElementException("No next element");
+          E temp = iterator.getElement();
+          iterator = iterator.getNext();
+          return temp;
+        }
+    } 
+    
+    @Override
+    public Iterator<E> iterator(){
+        return new LinkedListIterator();
+    }
+    
+    
+    public E get(int i){
+        Node<E> temp = header;
+        for(int j =0; j<=i; j++)
+            temp = temp.getNext();
+        
+        return temp.getElement();
+    }
+    
+    public E getNext(E elem){
+        Node<E> temp = header;
+        for(int i =0; i<size; i++){
+            temp = temp.getNext();
+            if(elem == temp.getElement())
+                return temp.getNext().getElement();
+        }
+        return null;
+    }
+    
+    
+
     
     
     @Override
