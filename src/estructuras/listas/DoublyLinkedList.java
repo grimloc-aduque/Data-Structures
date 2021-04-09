@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
  * @param <E>
  */
 
-public class DoublyLinkedList<E> implements Iterable{
+public class DoublyLinkedList<E> implements Iterable<E>{
     public static class Node<E>{
         private E element;
         private Node <E> prev;
@@ -88,6 +88,7 @@ public class DoublyLinkedList<E> implements Iterable{
         addLast(e);
     }
 
+
     public E removeFirst(){
         if(isEmpty())
             return null;
@@ -114,7 +115,35 @@ public class DoublyLinkedList<E> implements Iterable{
         successor.setPrev(predecessor);
         size -- ;
         return node.getElement();
-
+    }
+    
+    
+    // ArrayList Like
+    public E set(int index, E e){
+        Node<E> temp = getNode(index);
+        E old = temp.getElement();
+        Node<E> prev = temp.getPrev();
+        Node<E> next = temp.getNext(); 
+        addBetween(e, prev, next);
+        size --;
+        return old;
+    }
+    
+    public E remove(int index){
+        return remove(getNode(index));
+    }
+    
+    public E get(int index){
+        return getNode(index).getElement();
+    }
+    
+    
+    public Node<E> getNode(int index){
+        Node<E> temp = header.getNext();
+        for(int i=0; i<index; i++){
+            temp=temp.getNext();
+        }
+        return temp;
     }
     
     
@@ -139,24 +168,25 @@ public class DoublyLinkedList<E> implements Iterable{
         }
         return current;
     }
+
     
 
     
     private class LinkedListIterator implements Iterator<E> {
-        private Node<E> iterator = header.getNext();                   
+        private Node<E> iterator = header;                   
 
         @Override
         public boolean hasNext() { 
-            return iterator.getNext()!=null; 
+            return iterator.getNext()!=trailer; 
         }   
 
         @Override
         public E next() throws NoSuchElementException {
-          if (iterator.getNext()==null)
+          if (iterator.getNext()==trailer)
               throw new NoSuchElementException("No next element");
-          E temp = iterator.getElement();
+          
           iterator = iterator.getNext();
-          return temp;
+          return iterator.getElement();
         }
     } 
     
@@ -164,16 +194,7 @@ public class DoublyLinkedList<E> implements Iterable{
     public Iterator<E> iterator(){
         return new LinkedListIterator();
     }
-    
-    
-    public E get(int i){
-        Node<E> temp = header;
-        for(int j =0; j<=i; j++)
-            temp = temp.getNext();
-        
-        return temp.getElement();
-    }
-    
+
     public E getNext(E elem){
         Node<E> temp = header;
         for(int i =0; i<size; i++){
@@ -185,18 +206,11 @@ public class DoublyLinkedList<E> implements Iterable{
     }
     
     
-
-    
-    
     @Override
     public String toString(){
         String s = "";
-        Node<E> current = header.getNext();
-        while(current!=trailer){
-            s += current.getElement().toString();
-            current = current.getNext();
-        }
+        for(E elem: this)
+            s += elem.toString() + " ";
         return s;
-        
     }
 }

@@ -251,7 +251,7 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         String s = "";
         for(int i=0; i<indent; i++)
             s += "\t"; 
-        
+
         if(this.isInternal(node)){
             s += node.getElement().toString() + "(\n";  
             indent ++;
@@ -263,8 +263,14 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             for(int i=0; i<indent; i++)
                 s += "\t"; 
             s += ")\n";
-        }else
-            s += node.getElement().toString() + "\n";
+        }
+        else{
+            if(node.getElement()!=null)
+                s += node.getElement().toString() + "\n";
+            else
+                s += "-> null \n";
+        }
+            
         
         return s;
     }

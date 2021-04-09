@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package estructuras.colas;
+package estructuras.grafos;
 
 /**
  *
  * @author alejandro
  */
-public interface Entry<K,V> {
-    K getKey();
-    V getValue();
-
+public interface Edge<E> {
+    E getElement();
 }

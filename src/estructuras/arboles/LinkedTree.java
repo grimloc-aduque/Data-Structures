@@ -14,7 +14,7 @@ public class LinkedTree<E> extends AbstractTree<E>{
     protected static class Node<E> implements Position<E>{
         private E element;
         private Node<E> parent;
-        private DoublyLinkedList<Node<E>> children;
+        private DoublyLinkedList<Position<E>> children;
 
         public Node(E e, Node<E> above){
             element = e;
@@ -28,7 +28,7 @@ public class LinkedTree<E> extends AbstractTree<E>{
         public Node<E> getParent(){
             return parent;
         }
-        public DoublyLinkedList<Node<E>> getChildren(){
+        public DoublyLinkedList<Position<E>> getChildren(){
             return children;
         }
 
@@ -38,7 +38,7 @@ public class LinkedTree<E> extends AbstractTree<E>{
         public void setParent(Node<E> parentNode){
             parent = parentNode;
         }
-        public void setChildren(DoublyLinkedList<Node<E>> childrenNodes){
+        public void setChildren(DoublyLinkedList<Position<E>> childrenNodes){
             children = childrenNodes;
         }
 
@@ -126,7 +126,7 @@ public class LinkedTree<E> extends AbstractTree<E>{
         
         if(node.getChildren().size()==1){
             Node<E> parent = node.getParent();
-            Node<E> child = node.getChildren().removeLast();
+            Position<E> child = node.getChildren().removeLast();
             parent.getChildren().add(child);
         } 
         size --;

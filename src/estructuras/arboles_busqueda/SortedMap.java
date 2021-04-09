@@ -1,5 +1,5 @@
 
-package estructuras.mapas;
+package estructuras.arboles_busqueda;
 
 import estructuras.colas.Entry;
 

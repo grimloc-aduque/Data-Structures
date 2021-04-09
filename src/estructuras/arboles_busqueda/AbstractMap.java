@@ -1,5 +1,5 @@
 
-package estructuras.mapas;
+package estructuras.arboles_busqueda;
 
 import estructuras.colas.Entry;
 import java.util.Iterator;
@@ -9,6 +9,7 @@ import java.util.Iterator;
  */
 
 public abstract class AbstractMap<K, V> implements Map<K, V> {
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
@@ -23,10 +24,12 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
             v = value;
         }
 
+        @Override
         public K getKey() {
             return k;
         }
 
+        @Override
         public V getValue() {
             return v;
         }
@@ -35,10 +38,15 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
             k = key;
         }
 
-        protected V setValue(V value) {
+        public V setValue(V value) {
             V old = v;
             v = value;
             return old;
+        }
+    
+        @Override
+        public String toString(){
+            return String.format("(K:%s, V:%s)", getKey().toString(), getValue().toString());
         }
     }
 
@@ -90,8 +98,11 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
         }
     }
 
+    @Override
     public Iterable<V> values() {
         return new ValueIterable();
     }
+    
+    
 
 }

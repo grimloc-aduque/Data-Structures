@@ -39,6 +39,8 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
         return new BSTNode<>(e, parent, left, right);
     }
 
+    
+    /// Relinks a parent node with its oriented child node.
     private void relink(Node<Entry<K, V>> parent, Node<Entry<K, V>> child, boolean makeleftChild) {
         child.setParent(parent);
         if (makeleftChild)
@@ -47,6 +49,8 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
             parent.setRight(child);
     }
 
+    
+    /// Rotates Position p above its parent. 
     public void rotate(Position<Entry<K, V>> p) {
         Node<Entry<K, V>> x = validate(p);
         Node<Entry<K, V>> y = x.getParent();
@@ -66,6 +70,8 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
         }
     }
 
+    
+    // Performs a trinode restructuring of Position x with its parent/grandparent. 
     public Position<Entry<K, V>> reestructure(Position<Entry<K, V>> x) {
         Position<Entry<K, V>> y = parent(x);
         Position<Entry<K, V>> z = parent(y);
@@ -78,4 +84,20 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
             return x;
         }
     }
+
+    
+    @Override
+    public String toString(){
+        return super.toString();
+    }
+    
+    
+    public void inOrder(){
+        for(Object o : super.inorder()){
+            Node<Entry<K,V>> node = (Node<Entry<K,V>>) o ;
+            if(node.getElement()!=null)
+                System.out.println(node.getElement().toString());
+        }
+    }
+    
 }

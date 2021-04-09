@@ -2,7 +2,7 @@
 package estructuras;
 import estructuras.arboles.LinkedBinaryTree;
 import estructuras.colas.Entry;
-import estructuras.mapas.TreeMap;
+import estructuras.arboles_busqueda.TreeMap;
 
 /**
  *
