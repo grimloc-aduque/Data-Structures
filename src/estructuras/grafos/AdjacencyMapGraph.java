@@ -196,9 +196,14 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
     @Override
     public void removeEdge(Edge<E> e) throws IllegalArgumentException {
         InnerEdge<E> edge = validate(e);
-        InnerVertex<V>[] verts = (InnerVertex<V>[]) edge.getEndpoints();
-        verts[0].getOutgoing().remove(verts[1]);
-        verts[1].getIncoming().remove(verts[0]);
+        // Error en la clase del libro
+        // InnerVertex<V>[] verts = (InnerVertex<V>[]) edge.getEndpoints();
+        // verts[0].getOutgoing().remove(verts[1]);
+        // verts[1].getIncoming().remove(verts[0]);
+        InnerVertex<V> v0 = validate(edge.getEndpoints()[0]);
+        InnerVertex<V> v1 = validate(edge.getEndpoints()[1]);
+        v0.getOutgoing().remove(v1);
+        v1.getIncoming().remove(v0);
         edges.remove(edge.getPosition());
         edge.setPosition(null);
     }
@@ -223,6 +228,31 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
     
     
     // Practica 8
+    public void removeEdge(Vertex<V> u, Vertex<V> v){
+        removeEdge(getEdge(u, v));
+    }
+    
+    public ProbeHashMap<V, Vertex<V>> insertVertexList(V elem[]){
+        ProbeHashMap<V, Vertex<V>> vertMap = new ProbeHashMap<>();
+        for(int i=0; i<elem.length; i++){
+            InnerVertex<V> vert = (InnerVertex<V>) insertVertex(elem[i]);
+            vertMap.put(elem[i], vert);
+        }
+        return vertMap; 
+    }
+    
+    public void insertEdgeList(ProbeHashMap<V, Vertex<V>> vertMap, V elem1[], V elem2[], E peso[]){
+        InnerVertex<V> v1, v2;
+        for(int i=0; i<elem1.length; i++){
+            v1 = (InnerVertex<V>) vertMap.get(elem1[i]);
+            v2 = (InnerVertex<V>) vertMap.get(elem2[i]);
+            if(peso == null)
+                this.insertEdge(v1, v2, null); 
+            else
+                this.insertEdge(v1, v2, peso[i]);
+        } 
+    }
+    
 
     public void print(){
         System.out.println("Vertices");
@@ -238,6 +268,7 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
                     endVert[1].getElement().toString());
         }
     }
+    
     
     
 }
