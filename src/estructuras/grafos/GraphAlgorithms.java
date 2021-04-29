@@ -9,14 +9,17 @@ import estructuras.listas.LinkedPositionalList;
 import estructuras.listas.PositionalList;
 import estructuras.pilas.LinkedStack;
 import estructuras.tablas_hash.ProbeHashMap;
+import estructuras.colas.AdaptablePriorityQueue;
+import estructuras.colas.Entry;
+import estructuras.colas.HeapAdaptablePriorityQueue;
+
 
 
 /**
 * @author alejandro
 */
 
-
-public class GraphAlgoritms {
+public class GraphAlgorithms {
 
     // DFS
 
@@ -25,7 +28,7 @@ public class GraphAlgoritms {
             Map<Vertex<V>, Edge<E>> forest, boolean print){
         known.add(u);
         if(print)  System.out.print(u.getElement() + " "); //
-        for (Edge<E> e : g.outgoingEdgees(u)) {
+        for (Edge<E> e : g.outgoingEdges(u)) {
             Vertex<V> v = g.opposite(u, e);
             if (!known.contains(v)) {
                 forest.put(v, e);
@@ -73,7 +76,7 @@ public class GraphAlgoritms {
         while (!level.isEmpty()) {
             PositionalList<Vertex<V>> nextLevel = new LinkedPositionalList<>();
             for (Vertex<V> u : level)
-                for (Edge<E> e : g.outgoingEdgees(u)) {
+                for (Edge<E> e : g.outgoingEdges(u)) {
                     Vertex<V> v = g.opposite(u, e);
                     if (!known.contains(v)) {
                         known.add(v);
@@ -112,7 +115,7 @@ public class GraphAlgoritms {
     }
 
     // Ordenamiento Topologico en DAG
-    public static <V,E> PositionalList<Vertex<V>> topologicalSort(Graph<V,E> g){
+    public static <V,E> PositionalList<Vertex<V>> topologicalSort(Graph<V,E> g, boolean print){
         PositionalList<Vertex<V>> topo = new LinkedPositionalList<>();
         LinkedStack<Vertex<V>> ready = new LinkedStack<>();
         Map<Vertex<V>, Integer> inCount = new ProbeHashMap<>();
@@ -125,15 +128,76 @@ public class GraphAlgoritms {
         while( !ready.isEmpty() ){
             Vertex<V> u = ready.pop();
             topo.addLast(u);
-            for(Edge<E> e: g.outgoingEdgees(u)){
+            if(print) System.out.print(u.getElement() + ", ");
+            for(Edge<E> e: g.outgoingEdges(u)){
                 Vertex<V> v = g.opposite(u, e);
                 inCount.put(v, inCount.get(v)-1);
                 if(inCount.get(v) == 0)
                     ready.push(v);
             }
         }
+        if(print) System.out.println("\n");
         return topo;
     }
+
+
+    public static <V> Map<Vertex<V>, Integer>
+        shortestPathLegths(Graph<V,Integer> g, Vertex<V> src, boolean print){
+
+        Map<Vertex<V>, Integer> d = new ProbeHashMap<>();
+        Map<Vertex<V>, Integer> cloud = new ProbeHashMap<>();
+
+        AdaptablePriorityQueue<Integer, Vertex<V>> pq;
+        pq = new HeapAdaptablePriorityQueue<>();
+
+        Map<Vertex<V>, Entry<Integer, Vertex<V>>> pqTokens;
+        pqTokens = new ProbeHashMap<>();
+
+        for(Vertex<V> v: g.vertices()){
+            if(v == src)
+                d.put(v, 0);
+            else
+                d.put(v, Integer.MAX_VALUE);
+            pqTokens.put(v, pq.insert(d.get(v), v));
+        }
+
+        while(!pq.isEmpty()){
+            Entry<Integer, Vertex<V>> entry = pq.removeMin();
+            int key = entry.getKey();
+            Vertex<V> u = entry.getValue();
+            cloud.put(u, key);
+            if(print) System.out.print(u.getElement() + " ");
+            pqTokens.remove(u);
+            for(Edge<Integer> e: g.outgoingEdges(u)){
+                Vertex<V> v = g.opposite(u, e);
+                if(cloud.get(v) == null){
+                    int wgt = e.getElement();
+                    if(d.get(u) + wgt < d.get(v)){
+                        d.put(v, d.get(u)+wgt);
+                        pq.replaceKey(pqTokens.get(v), d.get(v));
+                    }
+                }
+            }
+        }
+        return cloud;
+    }
+
+
+    public static <V> Map<Vertex<V>, Edge<Integer>>
+        spTree(Graph<V, Integer> g, Vertex<V> s, Map<Vertex<V>, Integer> d){
+    
+        Map<Vertex<V>, Edge<Integer>> tree = new ProbeHashMap<>();
+        for(Vertex<V> v: d.keySet())
+            if(v != s)
+                for(Edge<Integer> e: g.incomingEdges(v)){
+                    Vertex<V> u = g.opposite(v, e);
+                    int wgt = e.getElement();
+                    if(d.get(v) == d.get(u)+wgt)
+                        tree.put(v, e);
+                }
+        return tree;
+    }
+
 
     // Funciones Propias
 
@@ -152,7 +216,7 @@ public class GraphAlgoritms {
     }
 
     public static <V,E> void spanningTree(Graph<V,E> g){
-        Map<Vertex<V>, Edge<E>> forestBFS = GraphAlgoritms.BFSComplete(g);
+        Map<Vertex<V>, Edge<E>> forestBFS = GraphAlgorithms.BFSComplete(g);
         System.out.println("Spanning Tree");
         // System.out.println("Edges");
         for(Edge<E> e: forestBFS.values()){
@@ -172,10 +236,82 @@ public class GraphAlgoritms {
         System.out.println("\n");
     }
     
+    
+    public static <V,E> void shortestPathLegth(Graph<V,Integer> g, Vertex<V> src, Vertex<V> dest){
+        ProbeHashMap<Vertex<V>, Integer> cloud;
+        cloud = (ProbeHashMap<Vertex<V>, Integer> )
+                    GraphAlgorithms.shortestPathLegths(g, src, false);
+        System.out.printf("Shortest Path length from %s to %s: %d\n", 
+                src.getElement(), dest.getElement(), cloud.get(dest));
+    }
+    
+    public static <V,E> void shortestPath(Graph<V,Integer> g, Vertex<V> src, Vertex<V> dest){
+        Map<Vertex<V>, Integer> cloud = shortestPathLegths(g, src, false);
+        Map<Vertex<V>, Edge<Integer>> tree = spTree(g, src, cloud);
+
+        LinkedStack<Edge<Integer>> stack = new LinkedStack<>();
+        
+        Vertex<V> walk = dest;
+        while(walk!=src){
+            Edge<Integer> e = tree.get(walk);
+            stack.push(e);
+            walk = g.opposite(walk, e);
+        }
+        
+        System.out.printf("Shortest Path from %s to %s\n", src.getElement(), dest.getElement());
+        while(!stack.isEmpty()){
+            Edge<Integer> e = stack.pop();
+            Vertex<V> endVert[] = g.endVertices(e);
+            System.out.printf("%s - %s : %d\n", endVert[0].getElement().toString(),
+                    endVert[1].getElement().toString(), (Integer)e.getElement());
+        }      
+    }
+    
+
+
+    
+    public static <V,E> void createCycle(Graph<V,E> g, Map<Vertex<V>, Edge<E>> forest, Vertex<V> walk){
+        LinkedStack<Vertex<V>> stack = new LinkedStack<>();
+        stack.push(walk);
+        Edge<E> e = forest.get(walk);
+        while(e!=null){
+            walk = g.opposite(walk, e);
+            stack.push(walk);
+            e = forest.get(walk);
+        }  
+        if(stack.size() < 3)  return;
+        
+        System.out.print("Ciclo: ");
+        Vertex<V> last = stack.top();
+        while(!stack.isEmpty())
+            System.out.print(stack.pop().getElement() + " ");  
+        System.out.println(last.getElement() + " ");  
+    }
+    
+    public static <V,E> void ciclesDFS(Graph<V,E> g, Vertex<V> u, Set<Vertex<V>> known, 
+            Map<Vertex<V>, Edge<E>> forest, Vertex<V> origin){
+        known.add(u);
+        for (Edge<E> e : g.outgoingEdges(u)) {
+            Vertex<V> v = g.opposite(u, e);
+            if (!known.contains(v)) {
+                forest.put(v, e);
+                ciclesDFS(g, v, known, forest, origin);
+            }
+            if(v==origin)
+                createCycle(g, forest, u);
+        }
+    }
+    
+    public static <V,E> void ciclesDFS(Graph<V,E> g){
+        for(Vertex<V> v: g.vertices()){
+            Map<Vertex<V>, Edge<E>> forest = new ProbeHashMap<>();
+            Set<Vertex<V>> known = new HashSet<>();
+            ciclesDFS(g, v, known, forest, v);
+        }
+    }
+    
 
 }
-
-
 
 
 

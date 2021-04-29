@@ -22,7 +22,7 @@ public interface Graph<V, E> {
 
     int inDegree(Vertex<V> v) throws IllegalArgumentException;
 
-    Iterable<Edge<E>> outgoingEdgees(Vertex<V> v) throws IllegalArgumentException;
+    Iterable<Edge<E>> outgoingEdges(Vertex<V> v) throws IllegalArgumentException;
 
     Iterable<Edge<E>> incomingEdges(Vertex<V> v) throws IllegalArgumentException;
 

@@ -124,7 +124,7 @@ public class AdjacencyMatrixGraph<V, E> implements Graph<V, E> {
     }
 
     @Override
-    public Iterable<Edge<E>> outgoingEdgees(Vertex<V> v) throws IllegalArgumentException {
+    public Iterable<Edge<E>> outgoingEdges(Vertex<V> v) throws IllegalArgumentException {
         DoublyLinkedList<Edge<E>> outgoing = new DoublyLinkedList<>();
         for (int i = 0; i < numV; i++) {
             Edge<E> e = edges.get(vertices.get(v)).get(i);

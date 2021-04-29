@@ -121,7 +121,7 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
     }
 
     @Override
-    public Iterable<Edge<E>> outgoingEdgees(Vertex<V> v) throws IllegalArgumentException {
+    public Iterable<Edge<E>> outgoingEdges(Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> vert = validate(v);
         return vert.getOutgoing().values();
     }
@@ -260,12 +260,15 @@ public class AdjacencyMapGraph<V, E> implements Graph<V, E> {
             System.out.println(v.getElement().toString());
         }
         
+        String vert = "-";
+        if(isDirected) vert = "->" ;
+        
         System.out.println("\nEdges");
         for(Edge<E> e: edges){
             Vertex<V> endVert[] = this.endVertices(e);
             
-            System.out.printf("%s - %s\n", endVert[0].getElement().toString(), 
-                    endVert[1].getElement().toString());
+            System.out.printf("%s %s %s : %d\n", endVert[0].getElement().toString(), 
+                    vert, endVert[1].getElement().toString(), (Integer)e.getElement());
         }
     }
     
